@@ -124,6 +124,7 @@
 
 <a name="pipe"/>
 <h4> Testing a pipe</h4>
+<p> Below, is the content of the pipe that we will create a test for. This StrenghtPipe has no dependencies, making it easy to create a test for </p>
 
 ```js
 export class StrengthPipe implements PipeTransform {
@@ -168,7 +169,7 @@ describe('Strength Pipe', () => {
 
 <a name="service"/>
 <h4> Testing a service</h4>
-<p> Lets now test the following service. The service contains the two methods, add() and clear(). The add method takes in a string and then pushes that string to the an array. The clear message clears the array.  </p> 
+<p> In this section we will learn how to test a service. The service contains the two methods, <code>add()</code> and <code>clear()</code>. The <code>add()</code> method takes in a string and then pushes that string to the array. The <code>clear()</code> method clears the array.  </p> 
 
 ```js                                            
 import { Injectable } from '@angular/core';
@@ -195,10 +196,8 @@ import { MessageService } from "./message.service";
 
 describe('Message Service', ()=>{
    let service : MessageService;
- 
-// can be removed                                               
 
-// this can be removed into the it method.                                                  
+// this can be removed into the it method to keep the aaa structure.    
 beforeEach(() => {
         service = new MessageService();                                          
 })
