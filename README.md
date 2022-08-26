@@ -22,6 +22,8 @@
   * [Work in progress](#wip)
 - [Advanced Topics](#advanced)  
   * [Work in progress](#wip)
+- [Jest](#jest)  
+  * [Work in progress](#wip)
   
 <a name="intro"/>
 <h2> Intro</h2>
@@ -309,3 +311,7 @@ describe('HeroesComponent', () => {
     })
   })
 })                                                  
+```
+
+<a name="jest"/>
+<h2> Jest</h2>
