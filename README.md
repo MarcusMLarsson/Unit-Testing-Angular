@@ -237,129 +237,153 @@ it('should have no messages to start',()=>{
 })
 ```
 
-<a name="component"/>
-<h4> Testing a component</h4>
-<p> Let's write a test for this component </p>
-                                                 
-```js                                                  
-import { OnInit } from '@angular/core'
-import { HeroService } from '../hero.service'
+<p> Let's now test a service with dependencies. </p>
 
-export class HeroesComponent implements OnInit {
-	heroes: any[]
-
-	constructor(private heroService: HeroService) {}
-
-	ngOnInit() {
-		this.getHeroes()
-	}
-
-	getHeroes(): void {
-		this.heroService
-			.getHeroes()
-			.subscribe((heroes) => (this.heroes = heroes))
-	}
-
-	add(name: string): void {
-		name = name.trim()
-		var strength = 11
-
-		if (!name) {
-			return
-		}
-
-		this.heroService.addHero({ name, strength })
-	}
-
-	delete(hero): void {
-		this.heroes = this.heroes.filter((h) => h !== hero)
-		this.heroService.deleteHero(hero).subscribe()
-	}
-}                                             
-```  
-
-<p> The hero services that is injected into the hero component. </p>
+</p>
 
 ```js
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
-import { tap } from 'rxjs/operators'
 
 @Injectable({
 	providedIn: 'root',
 })
-export class HeroService {
-	private heroesUrl = 'api/heroes' // URL to web api
-
+export class FakeService {
 	constructor(private http: HttpClient) {}
 
-	getHeroes(): Observable<any[]> {
-		return this.http
-			.get<any[]>(this.heroesUrl)
-			.pipe(tap((heroes) => console.log(`fetched heroes`)))
-	}
+	getDataV1(): Observable<any> {
+		const url = 'https://jsonplaceholder.typicode/com/tools/1'
 
-	addHero(hero: any): Observable<any> {
-		return this.http
-			.post<any>(this.heroesUrl, hero)
-			.pipe(tap((hero) => console.log(`added hero w/ id=${hero.id}`)))
-	}
-
-	deleteHero(hero): Observable<any> {
-		const id = typeof hero === 'number' ? hero : hero.id
-		const url = `${this.heroesUrl}/${id}`
-
-		return this.http
-			.delete<any>(url)
-			.pipe(tap((_) => console.log(`deleted hero id=${id}`)))
+		return this.http.get(url)
 	}
 }
 ```
 
-<p> To test the delete method we cant just provide an empty object, since it uses the heroService, this.heroService.deleteHero(). So we need to pass in an object that looks like the heroSerivce. This is where Jasmin can be used to create a mock. </p>                                               
-                                                  
-```js 
-describe('HeroesComponent', () => {
-  let component: HeroesComponent;
-  let HEROES;
-  let mockHeroService;
+<p> The FakeService, uses the HttpClient in order to make a HTTP get call. We don't want to make a real HTTP call when running the unit test. We need to draw a boundary around the unit that we are testing by using a mock. The mock, in this case the httpCLientSpy, is created using Jest. Keep in mind that Angular comes with Jasmin out of the box, but in order to use Jest you will need to change some configurations. The mockReturnValue needs to be casted to an observable, using of(), since the HttpClient library returns an observable. </p>
 
-  beforeEach(() => {
-    HEROES = [
-      {id:1, name: 'SpiderDude', strength: 8},
-      {id:2, name: 'Wonderful Woman', strength: 24},
-      {id:3, name: 'SuperDude', strength: 55}
-    ]
 
-    // creates an mock object that we can control. We pass in the array of method names.
-    mockHeroService = jasmine.createSpyObj(['getHeroes', 'addHero', 'deleteHero'])
+```js
+import { of } from 'rxjs'
+import { FakeService } from './fake.service'
 
-    component = new HeroesComponent(mockHeroService);
-  })
+describe('FakeService', () => {
+	let service: FakeService
+	let httpClientSpy: any
 
-  describe('delete', () => {
+	beforeEach(() => {
+		httpClientSpy = {
+			get: jest.fn(),
+		}
 
-    it('should remove the indicated hero from the heroes list', () => {
-      mockHeroService.deleteHero.and.returnValue(of(true))
-      component.heroes = HEROES;
+		service = new FakeService(httpClientSpy)
+	})
 
-      component.delete(HEROES[2]);
+	it('should be created', () => {
+		expect(service).toBeTruthy()
+	})
 
-      expect(component.heroes.length).toBe(2);
-    })
+	it('should test getDataV1()', () => {
+		const res = 'Metry'
+		const url = 'https://jsonplaceholder.typicode/com/tools/1'
 
-    it('should call deleteHero', () => {
-      mockHeroService.deleteHero.and.returnValue(of(true))
-      component.heroes = HEROES;
-
-      component.delete(HEROES[2]);
-
-      expect(mockHeroService.deleteHero).toHaveBeenCalledWith(HEROES[2]);
-    })
-  })
-})                                                  
+		jest.spyOn(httpClientSpy, 'get').mockReturnValue(of(res))
+		service.getDataV1()
+		expect(httpClientSpy.get).toHaveBeenCalledTimes(1)
+		expect(httpClientSpy.get).toHaveBeenCalledWith(url)
+	})
+})
 ```
+
+<a name="component"/>
+<h4> Testing a component</h4>
+<p> Let's write a test for this component </p>
+
+```js
+import { Component, OnInit } from '@angular/core'
+import { FakeService } from '../fake.service'
+
+@Component({
+	selector: 'app-data',
+	templateUrl: './data.component.html',
+	styleUrls: ['./data.component.scss'],
+})
+export class DataComponent implements OnInit {
+	public serviceData: any
+	public errorMessage: any
+
+	constructor(private fakeService: FakeService) {}
+
+	ngOnInit(): void {
+		this.getServiceData()
+	}
+
+	public getServiceData() {
+		this.fakeService.getDataV1().subscribe({
+			next: (data) => (this.serviceData = data),
+			error: (err) => (this.errorMessage = err.statusText),
+			complete: () => {
+				console.log('Finished')
+			},
+		})
+	}
+}
+```                                                 
+
+
+<p> To test the getServiceData() method we cant just provide an empty object, since it uses the fakeService, this.fakeService.getDataV1(). So we need to pass in an object that looks like the fakeService. This is where Jest can be used to create a mock. </p>                                               
+                                                  
+ 
+ 
+ ```js
+import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { of } from 'rxjs'
+import { FakeService } from '../fake.service'
+
+import { DataComponent } from './data.component'
+
+describe('DataComponent', () => {
+	let component: DataComponent
+	let fixture: ComponentFixture<DataComponent>
+	let fakeServiceMock: any
+
+	beforeEach(async () => {
+		fakeServiceMock = {
+			getDataV1: jest.fn(),
+		}
+
+		await TestBed.configureTestingModule({
+			declarations: [DataComponent],
+			providers: [
+				{
+					provide: FakeService,
+					useValue: fakeServiceMock,
+				},
+			],
+		}).compileComponents()
+	})
+
+	beforeEach(() => {
+		fixture = TestBed.createComponent(DataComponent)
+		component = fixture.componentInstance
+	})
+
+	it('should create', () => {
+		expect(component).toBeTruthy()
+	})
+
+	it('should getServiceData set serviceData', () => {
+		const expResp = {
+			name: 'Metry',
+		}
+
+		jest.spyOn(fakeServiceMock, 'getDataV1').mockReturnValue(of(expResp))
+		fixture.detectChanges()
+
+		expect(component.serviceData.name).toBe(expResp.name)
+	})
+})
+ ```
 
 <a name="jest"/>
 <h2> Jest</h2>
