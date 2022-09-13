@@ -279,6 +279,7 @@ export class HeroesComponent implements OnInit {
 ```  
 
 <p> The hero services that is injected into the hero component. </p>
+
 ```js
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
@@ -315,6 +316,7 @@ export class HeroService {
 	}
 }
 ```
+
 <p> To test the delete method we cant just provide an empty object, since it uses the heroService, this.heroService.deleteHero(). So we need to pass in an object that looks like the heroSerivce. This is where Jasmin can be used to create a mock. </p>                                               
                                                   
 ```js 
