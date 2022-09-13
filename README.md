@@ -15,7 +15,11 @@
   * [Mocking to isolate code](#isolate) 
   * [Testing interaction](#interaction)
 - [Shallow Integration Tests](#shallow)  
-  * [Work in progress](#wip) 
+  * [Debugging techniques](#debugging) 
+  * [The TestBed](#testbed)  
+  * [Using NO_ERROR_SCHEMA](#schema) 
+  * [Testing rendered HTML](#html) 
+  * [Native- vs Debug-element](#element)
 - [Deep Integration Tests](#deep)  
   * [Work in progress](#wip) 
 - [Testing DOM Interaction & Routing Components](#dom)  
@@ -315,3 +319,17 @@ describe('HeroesComponent', () => {
 
 <a name="jest"/>
 <h2> Jest</h2>
+
+
+
+<a name="shallow"/>
+<h2> Shallow Integration Test</h2>
+
+
+<a name="debugging"/>
+<h4> Debugging techniques </h4>
+
+
+
+<a name="testbed"/>
+<h4> The TestBed</h4>
