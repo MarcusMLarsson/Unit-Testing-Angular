@@ -151,7 +151,7 @@ export class StrengthPipe implements PipeTransform {
                                                                                                                                          
 ```
                                       
-<p> To test this pipe, we create a strength.pipe.spec.ts file.  </p>                                    
+<p> To test this pipe, we create a strength.pipe.spec.ts file. Then run npm test strength.pipe.spec.ts. The test should pass and display 'should display weak if strength is 3'. </p>                                    
                                       
 ```js
 import { StrengthPipe } from "./strength.pipe";
@@ -242,37 +242,79 @@ it('should have no messages to start',()=>{
 <p> Let's write a test for this component </p>
                                                  
 ```js                                                  
+import { OnInit } from '@angular/core'
+import { HeroService } from '../hero.service'
+
 export class HeroesComponent implements OnInit {
-  heroes: Hero[];
+	heroes: any[]
 
-  constructor(private heroService: HeroService) { }
+	constructor(private heroService: HeroService) {}
 
-  ngOnInit() {
-    this.getHeroes();
-  }
+	ngOnInit() {
+		this.getHeroes()
+	}
 
-  getHeroes(): void {
-    this.heroService.getHeroes()
-    .subscribe(heroes => this.heroes = heroes);
-  }
+	getHeroes(): void {
+		this.heroService
+			.getHeroes()
+			.subscribe((heroes) => (this.heroes = heroes))
+	}
 
-  add(name: string): void {
-    name = name.trim();
-    var strength = 11
-    if (!name) { return; }
-    this.heroService.addHero({ name, strength } as Hero)
-      .subscribe(hero => {
-        this.heroes.push(hero);
-      });
-  }
+	add(name: string): void {
+		name = name.trim()
+		var strength = 11
 
-  delete(hero: Hero): void {
-    this.heroes = this.heroes.filter(h => h !== hero);
-    this.heroService.deleteHero(hero).subscribe();
-  }
+		if (!name) {
+			return
+		}
 
-}                                              
-```     
+		this.heroService.addHero({ name, strength })
+	}
+
+	delete(hero): void {
+		this.heroes = this.heroes.filter((h) => h !== hero)
+		this.heroService.deleteHero(hero).subscribe()
+	}
+}                                             
+```  
+
+<p> The hero services that is injected into the hero component. </p>
+```js
+import { HttpClient } from '@angular/common/http'
+import { Injectable } from '@angular/core'
+import { Observable } from 'rxjs'
+import { tap } from 'rxjs/operators'
+
+@Injectable({
+	providedIn: 'root',
+})
+export class HeroService {
+	private heroesUrl = 'api/heroes' // URL to web api
+
+	constructor(private http: HttpClient) {}
+
+	getHeroes(): Observable<any[]> {
+		return this.http
+			.get<any[]>(this.heroesUrl)
+			.pipe(tap((heroes) => console.log(`fetched heroes`)))
+	}
+
+	addHero(hero: any): Observable<any> {
+		return this.http
+			.post<any>(this.heroesUrl, hero)
+			.pipe(tap((hero) => console.log(`added hero w/ id=${hero.id}`)))
+	}
+
+	deleteHero(hero): Observable<any> {
+		const id = typeof hero === 'number' ? hero : hero.id
+		const url = `${this.heroesUrl}/${id}`
+
+		return this.http
+			.delete<any>(url)
+			.pipe(tap((_) => console.log(`deleted hero id=${id}`)))
+	}
+}
+```
 <p> To test the delete method we cant just provide an empty object, since it uses the heroService, this.heroService.deleteHero(). So we need to pass in an object that looks like the heroSerivce. This is where Jasmin can be used to create a mock. </p>                                               
                                                   
 ```js 
