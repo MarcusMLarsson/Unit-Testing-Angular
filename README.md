@@ -15,7 +15,6 @@
   * [Mocking to isolate code](#isolate) 
   * [Testing interaction](#interaction)
 - [Shallow Integration Tests](#shallow)  
-  * [Debugging techniques](#debugging) 
   * [The TestBed](#testbed)  
   * [Using NO_ERROR_SCHEMA](#schema) 
   * [Testing rendered HTML](#html) 
@@ -392,12 +391,40 @@ describe('DataComponent', () => {
 
 <a name="shallow"/>
 <h2> Shallow Integration Test</h2>
-
-
-<a name="debugging"/>
-<h4> Debugging techniques </h4>
-
-
+<p> It's time now to begin writing our first integration test. It will be a shallow integration test, meaning that we are only going to test a single component, and non of its child components or directives.</p>
 
 <a name="testbed"/>
 <h4> The TestBed</h4>
+<p> To setup our component for integration tests, we use a special utility called the TestBed. The TestBed is defined inside the beforeEach. The TestBed is what allows us to test both our component and its template running together. What is happening is that we are creating a special module, just for test purposes. The TestBed object has many different method, but the one we need are TestBed.configureTestingModule(). We are creating a module specifically for testing. The configureTestingModule() takes a single parameter that is an object. That object matches exactly the layout of when we create an AppModule. We don't worry about the bootstrap array, and we only worry about providers under certain circumstances. We also don't worry about imports. Once the testing module has been created, we can now create our component. We do this by calling TestBed.createComponent(). Calling this functions tells the TestBed to use the testing module and to construct the HeroComponenet. The createComponent() actually returns a component fixture, which is basically a wrapper for the component that is using in testing and it has a few other properties more then what the component by itself has. One of them is the comonent instance itself. Add fixture.detectChanges() to detect changes.</p>
+
+ ```js
+ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+ 
+ 	beforeEach(waitForAsync(() => {
+		TestBed.configureTestingModule({
+		declerations: [HeroComponent],
+		})
+		TestBed.createComponent(HeroComponent)
+	}))
+
+  ```
+  
+<p>Along side declreaitons there is this schema section for mdules. That schema section, just like the declerations settings is an array. This configuration tells Angular how to process the HTML that is has been handed. Using NO_ERROR_SCHEMA tells Anuglar that it should not validate the schema or the template that we use.</p>
+  
+  
+ ```js
+ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+ 
+ 	beforeEach(waitForAsync(() => {
+		TestBed.configureTestingModule({
+		declerations: [HeroComponent],
+		schemas: [NO_ERROR_SCHEMA],
+		})
+		TestBed.createComponent(HeroComponent)
+	}))
+
+  ```
+  
+ <a name="html"/>
+<h4> Test Rendered HTML</h4>
+<p> let's write a test that tests that our template is correct.</p>
