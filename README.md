@@ -294,6 +294,23 @@ describe('FakeService', () => {
 })
 ```
 
+<p> TestBed.inject vs new Service(...dependencies) </p>
+<p> The angular guide demonstrates two different ways of testing, one by calling new Service() and providing the dependencies to the constructor directly, and the second using dependency injection by calling TestBed.inject(Service). </p>
+
+```js
+TestBed.configureTestingModule({ providers: [SomeService] });
+
+it('should use SomeService', () => {
+  service = TestBed.inject(SomeService);
+  expect(service.getValue()).toBe('real value');
+});
+
+```
+
+<p> When you call TestBed.configureTestingModule({ providers: [SomeService] });, this sets up an NgModule that can be used in subsequent tests. If you call TestBed.inject(SomeService), this retrieves SomeService from the injector and instantiates it if needed. If it is instantiated, then the injector injects references to it's dependencies and returns a new instance of the service. If SomeService has already been instantiated, then the TestBed does not need to create it. This means that it won't call the constructor a subsequent time. </p>
+
+<p> Basically these two methods are the same if you are mocking all of your dependencies and if you don't need to access the DOM. Instantiating classes without the TestBed is significantly faster because there isn't the overhead of loading the dependency injector for every test. </p>
+
 <a name="component"/>
 <h4> Testing a component</h4>
 <p> Let's write a test for this component </p>
@@ -383,12 +400,7 @@ describe('DataComponent', () => {
 	})
 })
  ```
-
-<a name="jest"/>
-<h2> Jest</h2>
-
-
-
+ 
 <a name="shallow"/>
 <h2> Shallow Integration Test</h2>
 <p> It's time now to begin writing our first integration test. It will be a shallow integration test, meaning that we are only going to test a single component, and non of its child components or directives.</p>
