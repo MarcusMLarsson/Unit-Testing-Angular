@@ -292,8 +292,7 @@ describe('FakeService', () => {
 })
 ```
 
-<p> TestBed.inject vs new Service(...dependencies) </p>
-<p> The angular guide demonstrates two different ways of testing a service. 
+<p> The angular guide demonstrates two different ways of testing a service. </p> 
 <ul>
 <li> Calling new Service() and providing the dependencies to the constructor directly, demonstrated above. </li>
 <li> Using dependency injection by calling <code>TestBed.inject(Service)</code>, demonstrated below. </p>
