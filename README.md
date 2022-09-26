@@ -17,6 +17,7 @@
   * [Using NO_ERROR_SCHEMA](#schema) 
   * [Testing rendered HTML](#html) 
   * [Native- vs Debug-element](#element)
+- [asynchronous tests]
 - [Deep Integration Tests](#deep)  
   * [Work in progress](#wip) 
 - [Testing DOM Interaction & Routing Components](#dom)  
