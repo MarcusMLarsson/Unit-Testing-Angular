@@ -311,7 +311,29 @@ it('should use SomeService', () => {
 
 <p> When you call <code>TestBed.configureTestingModule({ providers: [SomeService] })</code> an NgModule is setup that can be used in subsequent tests. To inject a service into this Module, we use the TestBed.inject() method. Basically these two methods are the same if you are mocking all of your dependencies and if you don't need to access the DOM. Instantiating classes without the TestBed is significantly faster because there isn't the overhead of loading the dependency injector for every test.</p>
 
-<a name="component"/>
+ 
+<a name="shallow"/>
+<h2> Shallow Integration Test</h2>
+<p> It's time now to begin writing our first integration test. It will be a shallow integration test, meaning that we are only going to test a single component, and non of its child components or directives.</p>
+
+<a name="testbed"/>
+<h4> The TestBed</h4>
+<p> To setup our component for integration tests, we use a special utility called the TestBed. The TestBed is defined inside the beforeEach. The TestBed is what allows us to test both our component and its template running together. What is happening is that we are creating a special module, just for test purposes. The TestBed object has many different method, but the one we need are <code>TestBed.configureTestingModule()</code>. We are creating a module specifically for testing. The <code>configureTestingModule()</code> takes a single parameter that is an object. That object matches exactly the layout of when we create an AppModule. Once the testing module has been created, we can now create our component. We do this by calling <code>TestBed.createComponent()</code>. Calling this functions tells the TestBed to use the testing module and to construct the HeroComponenet. <code>The createComponent()</code> actually returns a component fixture, which is basically a wrapper for the component that is used in testing and it has a few other properties more then what the component by itself has. One of them is the component instance itself. Add fixture.detectChanges() to detect changes. Along side declerations there is this schema section for modules. That schema section, just like the declerations settings is an array. This configuration tells Angular how to process the HTML that is has been handed. Using NO_ERROR_SCHEMA tells Anuglar that it should not validate the schema or the template that we use.</p>
+
+ ```js
+ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+ 
+ 	beforeEach(waitForAsync(() => {
+		TestBed.configureTestingModule({
+		declerations: [HeroComponent], // for components
+		providers: [AuthService], // for services
+		schemas: [NO_ERROR_SCHEMA], // tells Anuglar that it should not validate the schema or the template that we use
+		})
+		TestBed.createComponent(HeroComponent) // creates a wrapper for the component
+	}))
+
+  ```
+ <a name="component"/>
 <h4> Testing a component</h4>
 <p> Let's write a test for this component </p>
 
@@ -345,7 +367,6 @@ export class DataComponent implements OnInit {
 	}
 }
 ```                                                 
-
 
 <p> To test the <code>getServiceData()</code> method we cant just provide an empty object, since it uses the fakeService, <code>this.fakeService.getDataV1()</code>. So we need to pass in an object that looks like the fakeService. This is where Jest can be used to create a mock. </p>                                               
                                                   
@@ -399,42 +420,9 @@ describe('DataComponent', () => {
 	})
 })
  ```
- 
-<a name="shallow"/>
-<h2> Shallow Integration Test</h2>
-<p> It's time now to begin writing our first integration test. It will be a shallow integration test, meaning that we are only going to test a single component, and non of its child components or directives.</p>
-
-<a name="testbed"/>
-<h4> The TestBed</h4>
-<p> To setup our component for integration tests, we use a special utility called the TestBed. The TestBed is defined inside the beforeEach. The TestBed is what allows us to test both our component and its template running together. What is happening is that we are creating a special module, just for test purposes. The TestBed object has many different method, but the one we need are <code>TestBed.configureTestingModule()</code>. We are creating a module specifically for testing. The <code>configureTestingModule()</code> takes a single parameter that is an object. That object matches exactly the layout of when we create an AppModule. Once the testing module has been created, we can now create our component. We do this by calling <code>TestBed.createComponent()</code>. Calling this functions tells the TestBed to use the testing module and to construct the HeroComponenet. <code>The createComponent()</code> actually returns a component fixture, which is basically a wrapper for the component that is used in testing and it has a few other properties more then what the component by itself has. One of them is the component instance itself. Add fixture.detectChanges() to detect changes.</p>
-
- ```js
- import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
- 
- 	beforeEach(waitForAsync(() => {
-		TestBed.configureTestingModule({
-		declerations: [HeroComponent],
-		})
-		TestBed.createComponent(HeroComponent)
-	}))
-
-  ```
-  
-<p>Along side declreaitons there is this schema section for mdules. That schema section, just like the declerations settings is an array. This configuration tells Angular how to process the HTML that is has been handed. Using NO_ERROR_SCHEMA tells Anuglar that it should not validate the schema or the template that we use.</p>
   
   
- ```js
- import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
- 
- 	beforeEach(waitForAsync(() => {
-		TestBed.configureTestingModule({
-		declerations: [HeroComponent],
-		schemas: [NO_ERROR_SCHEMA],
-		})
-		TestBed.createComponent(HeroComponent)
-	}))
-
-  ```
+  
   
  <a name="html"/>
 <h4> Test Rendered HTML</h4>
