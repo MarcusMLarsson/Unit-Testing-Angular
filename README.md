@@ -12,8 +12,6 @@
   * [Testing a pipe](#pipe) 
   * [Testing a service](#service) 
   * [Testing a component](#component) 
-  * [Mocking to isolate code](#isolate) 
-  * [Testing interaction](#interaction)
 - [Shallow Integration Tests](#shallow)  
   * [The TestBed](#testbed)  
   * [Using NO_ERROR_SCHEMA](#schema) 
@@ -349,9 +347,8 @@ export class DataComponent implements OnInit {
 ```                                                 
 
 
-<p> To test the getServiceData() method we cant just provide an empty object, since it uses the fakeService, this.fakeService.getDataV1(). So we need to pass in an object that looks like the fakeService. This is where Jest can be used to create a mock. </p>                                               
+<p> To test the <code>getServiceData()</code> method we cant just provide an empty object, since it uses the fakeService, <code>this.fakeService.getDataV1()</code>. So we need to pass in an object that looks like the fakeService. This is where Jest can be used to create a mock. </p>                                               
                                                   
- 
  
  ```js
 import { ComponentFixture, TestBed } from '@angular/core/testing'
@@ -409,7 +406,7 @@ describe('DataComponent', () => {
 
 <a name="testbed"/>
 <h4> The TestBed</h4>
-<p> To setup our component for integration tests, we use a special utility called the TestBed. The TestBed is defined inside the beforeEach. The TestBed is what allows us to test both our component and its template running together. What is happening is that we are creating a special module, just for test purposes. The TestBed object has many different method, but the one we need are TestBed.configureTestingModule(). We are creating a module specifically for testing. The configureTestingModule() takes a single parameter that is an object. That object matches exactly the layout of when we create an AppModule. We don't worry about the bootstrap array, and we only worry about providers under certain circumstances. We also don't worry about imports. Once the testing module has been created, we can now create our component. We do this by calling TestBed.createComponent(). Calling this functions tells the TestBed to use the testing module and to construct the HeroComponenet. The createComponent() actually returns a component fixture, which is basically a wrapper for the component that is using in testing and it has a few other properties more then what the component by itself has. One of them is the comonent instance itself. Add fixture.detectChanges() to detect changes.</p>
+<p> To setup our component for integration tests, we use a special utility called the TestBed. The TestBed is defined inside the beforeEach. The TestBed is what allows us to test both our component and its template running together. What is happening is that we are creating a special module, just for test purposes. The TestBed object has many different method, but the one we need are <code>TestBed.configureTestingModule()</code>. We are creating a module specifically for testing. The <code>configureTestingModule()</code> takes a single parameter that is an object. That object matches exactly the layout of when we create an AppModule. Once the testing module has been created, we can now create our component. We do this by calling <code>TestBed.createComponent()</code>. Calling this functions tells the TestBed to use the testing module and to construct the HeroComponenet. <code>The createComponent()</code> actually returns a component fixture, which is basically a wrapper for the component that is used in testing and it has a few other properties more then what the component by itself has. One of them is the component instance itself. Add fixture.detectChanges() to detect changes.</p>
 
  ```js
  import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
