@@ -295,7 +295,11 @@ describe('FakeService', () => {
 ```
 
 <p> TestBed.inject vs new Service(...dependencies) </p>
-<p> The angular guide demonstrates two different ways of testing, one by calling new Service() and providing the dependencies to the constructor directly, and the second using dependency injection by calling TestBed.inject(Service). </p>
+<p> The angular guide demonstrates two different ways of testing a service. 
+<ul>
+<li> Calling new Service() and providing the dependencies to the constructor directly, demonstrated above. </li>
+<li> Using dependency injection by calling <code>TestBed.inject(Service)</code>, demonstrated below. </p>
+</ul>
 
 ```js
 TestBed.configureTestingModule({ providers: [SomeService] });
@@ -307,9 +311,7 @@ it('should use SomeService', () => {
 
 ```
 
-<p> When you call TestBed.configureTestingModule({ providers: [SomeService] });, this sets up an NgModule that can be used in subsequent tests. If you call TestBed.inject(SomeService), this retrieves SomeService from the injector and instantiates it if needed. If it is instantiated, then the injector injects references to it's dependencies and returns a new instance of the service. If SomeService has already been instantiated, then the TestBed does not need to create it. This means that it won't call the constructor a subsequent time. </p>
-
-<p> Basically these two methods are the same if you are mocking all of your dependencies and if you don't need to access the DOM. Instantiating classes without the TestBed is significantly faster because there isn't the overhead of loading the dependency injector for every test. </p>
+<p> When you call <code>TestBed.configureTestingModule({ providers: [SomeService] })</code> an NgModule is setup that can be used in subsequent tests. To inject a service into this Module, we use the TestBed.inject() method. Basically these two methods are the same if you are mocking all of your dependencies and if you don't need to access the DOM. Instantiating classes without the TestBed is significantly faster because there isn't the overhead of loading the dependency injector for every test.</p>
 
 <a name="component"/>
 <h4> Testing a component</h4>
