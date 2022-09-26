@@ -17,7 +17,7 @@
   * [Using NO_ERROR_SCHEMA](#schema) 
   * [Testing rendered HTML](#html) 
   * [Native- vs Debug-element](#element)
-- [asynchronous tests]
+- [asynchronous tests](#asynchronous)
 - [Deep Integration Tests](#deep)  
   * [Work in progress](#wip) 
 - [Testing DOM Interaction & Routing Components](#dom)  
@@ -426,3 +426,44 @@ describe('DataComponent', () => {
  <a name="html"/>
 <h4> Test Rendered HTML</h4>
 <p> let's write a test that tests that our template is correct.</p>
+
+
+<a name="asynchronous"/>
+<h2> Asynchronous tests</h2>
+
+<p> To access variables in an observable, we have to be in its function scope. Because of that, one could imagen the test below could work. </p>
+
+```js
+it('should be', () => {
+  anyObservable$()
+    .subscribe((r) => {
+      expect(r).toBeTruthy();
+    });
+});
+```
+<p> In reality, this test will not always work as intended. This is because the test, <code>expect(r).toBeTruthy()</code>, will sometimes execute faster than the subscribe() callback is called. To overcome this, frameworks like Jest or Karma provides a done() function. It’s a marker for test runners not to finish the test until we call it. </p>
+
+```js
+it('should be green for async operation', (done) => {
+  timeout(500)
+    .subscribe((el) => {
+      expect(el).toBeTruthy();
+      done();
+    });
+});
+```
+
+<p> Do we always need to use done() in callback? When callbacks are synchronous, we don’t really need to use expect() inside callback.  For example</p>
+```js
+it('should be', () => {
+  // given
+  const result = [];
+
+  // when
+  of(1, 2)
+    .subscribe((el) => result.push(el));
+
+  // then
+  expect(result).toEqual([1, 2]);
+});
+```
