@@ -485,7 +485,77 @@ describe('DataComponent', () => {
 		expect(component.serviceData.name).toBe(expResp.name)
 	})
 })
- ```  
+ ``` 
+ 
+ <p> Let's take another example. Let's write a test for the componenet below. The WelcomeComponent has decision logic that interacts with the service, logic that makes this component worth testing.</p>
+ 
+ ```js
+ 
+import { Component, OnInit } from '@angular/core';
+import { UserService } from '../model/user.service';
+
+@Component({
+  selector: 'app-welcome',
+  template: '<h3 class="welcome"><i>{{welcome}}</i></h3>'
+})
+export class WelcomeComponent implements OnInit {
+  welcome = '';
+  constructor(private userService: UserService) { }
+
+  ngOnInit(): void {
+    this.welcome = this.userService.isLoggedIn ?
+      'Welcome, ' + this.userService.user.name : 'Please log in.';
+  }
+}
+ 
+ ```
+ 
+ <p> The purpose of the spec is to test the component, not the service. Injecting the real UserService could be a nightmare. The real service might ask the user for login credentials and attempt to reach an authentication server. It is far easier and safer to create and register a test double in place of the real UserService. This particular test suite supplies a minimal stub of the UserService. </p>
+ 
+  ```js
+ let userServiceStub: Partial<UserService>;  //make all of the properties of a type optional
+
+beforeEach(() => {
+  // stub UserService for test purposes
+  userServiceStub = {
+    isLoggedIn: true,
+    user: { name: 'Test User' },
+  };
+
+  TestBed.configureTestingModule({
+     declarations: [ WelcomeComponent ],
+     providers: [ { provide: UserService, useValue: userServiceStub } ],
+  });
+
+  fixture = TestBed.createComponent(WelcomeComponent);
+  comp    = fixture.componentInstance;
+
+  // UserService from the root injector
+  userService = TestBed.inject(UserService);
+
+  //  get the "welcome" element by CSS selector (e.g., by class name)
+  el = fixture.nativeElement.querySelector('.welcome');
+  
+  it('should welcome the user', () => {
+  fixture.detectChanges();
+  const content = el.textContent;
+  expect(content)
+    .withContext('"Welcome ..."')
+    .toContain('Welcome');
+  expect(content)
+    .withContext('expected name')
+    .toContain('Test User');
+});
+
+it('should welcome "Bubba"', () => {
+  userService.user.name = 'Bubba'; // welcome message hasn't been shown yet
+  fixture.detectChanges();
+  expect(el.textContent).toContain('Bubba');
+});
+});
+ ```
+ <p> </p>
+ 
  <a name="html"/>
 <h4> Test Rendered HTML</h4>
 <p> A component, unlike all other parts of an Angular application, combines an HTML template and a TypeScript class. The component truly is the template and the class working together. Many components have complex interactions with the DOM elements described in their templates, causing HTML to appear and disappear as the component state changes. To adequately test these components, you have to create the DOM elements associated with the components, you must examine the DOM to confirm that component state displays properly at the appropriate times, and you must simulate user interaction with the screen to determine whether those interactions cause the component to behave as expected.</p>
