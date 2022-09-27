@@ -17,7 +17,7 @@
   * [Testing rendered HTML](#html) 
   * [Native- vs Debug-element](#element)
   * [Fixture.detectChanges()](#detectChanges)
-  * [dispatchEvent()](#dispatchEvent()
+  * [dispatchEvent()](#dispatchEvent())
 - [Asynchronous tests](#asynchronous)
 - [Deep Integration Tests](#deep)  
   * [Work in progress](#wip) 
