@@ -588,7 +588,7 @@ it('should display original title', () => {
 });
 ```
 
-<p> For example, the above test would fail and would display in the console expected '' to contain 'Test Tour of Heroes'. Binding happens when Angular performs change detection. In production, change detection kicks in automatically when Angular creates a component or the user enters a keystroke or an asynchronous activity (for example, AJAX) completes. The TestBed.createComponent does not trigger change detection. You must tell the TestBed to perform data binding by calling fixture.detectChanges(). Only then does the <h1> have the expected title. </p>
+<p> For example, the above test would fail and would display in the console expected '' to contain 'Test Tour of Heroes'. Binding happens when Angular performs change detection. In production, change detection kicks in automatically when Angular creates a component or the user enters a keystroke or an asynchronous activity (for example, AJAX) completes. The TestBed.createComponent does not trigger change detection. You must tell the TestBed to perform data binding by calling fixture.detectChanges(). Only then does the h1 tag have the expected title. </p>
 
 <p> Some testers prefer that the Angular test environment run change detection automatically. That's possible by configuring the TestBed with the ComponentFixtureAutoDetect provider.</p>
 
