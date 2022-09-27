@@ -16,6 +16,8 @@
   * [Testing a component](#component) 
   * [Testing rendered HTML](#html) 
   * [Native- vs Debug-element](#element)
+  * [Fixture.detectChanges()](#detectChanges)
+  * [dispatchEvent()](#dispatchEvent()
 - [Asynchronous tests](#asynchronous)
 - [Deep Integration Tests](#deep)  
   * [Work in progress](#wip) 
@@ -549,6 +551,61 @@ it('should find the <p> with fixture.debugElement.query(By.css)', () => {
 <li> The query returns a DebugElement for the paragraph. </li>
 <li> You must unwrap that result to get the paragraph element. </li>
 </ul>
+
+<a name="detectChanges"/>
+<h4> fixture.detectChanges()</h4>
+
+```js
+@Component({
+  selector: 'app-banner',
+  template: '<h1>{{title}}</h1>',
+  styles: ['h1 { color: green; font-size: 350%}']
+})
+export class BannerComponent {
+  title = 'Test Tour of Heroes';
+}
+
+```
+
+<p> The above component looks very straightforward to test but can create some challanges as createComponent() does not bind data</p>
+
+```js
+let component: BannerComponent;
+let fixture: ComponentFixture<BannerComponent>;
+let h1: HTMLElement;
+
+beforeEach(() => {
+  TestBed.configureTestingModule({
+    declarations: [ BannerComponent ],
+  });
+  fixture = TestBed.createComponent(BannerComponent);
+  component = fixture.componentInstance; // BannerComponent test instance
+  h1 = fixture.nativeElement.querySelector('h1');
+});
+
+it('should display original title', () => {
+  expect(h1.textContent).toContain(component.title);
+});
+```
+
+<p> For example, the above test would fail and would display in the console expected '' to contain 'Test Tour of Heroes'. Binding happens when Angular performs change detection. In production, change detection kicks in automatically when Angular creates a component or the user enters a keystroke or an asynchronous activity (for example, AJAX) completes. The TestBed.createComponent does not trigger change detection. You must tell the TestBed to perform data binding by calling fixture.detectChanges(). Only then does the <h1> have the expected title. </p>
+
+<p> Some testers prefer that the Angular test environment run change detection automatically. That's possible by configuring the TestBed with the ComponentFixtureAutoDetect provider.</p>
+
+```js
+import { ComponentFixtureAutoDetect } from '@angular/core/testing';
+
+TestBed.configureTestingModule({
+  declarations: [ BannerComponent ],
+  providers: [
+    { provide: ComponentFixtureAutoDetect, useValue: true }
+  ]
+});
+```
+
+<a name="dispatchEvent()">
+<h4> dispatchEvent() </h4>
+
 
 <a name="asynchronous"/>
 <h2> Asynchronous tests</h2>
