@@ -16,7 +16,7 @@
   * [Testing a component](#component) 
   * [Testing rendered HTML](#html) 
   * [Native- vs Debug-element](#element)
-- [asynchronous tests](#asynchronous)
+- [Asynchronous tests](#asynchronous)
 - [Deep Integration Tests](#deep)  
   * [Work in progress](#wip) 
 - [Testing DOM Interaction & Routing Components](#dom)  
