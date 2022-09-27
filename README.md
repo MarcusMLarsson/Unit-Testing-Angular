@@ -331,6 +331,73 @@ it('should use SomeService', () => {
 	}))
 
   ```
+ <p> Here is a way, you can create a reusable Testbed that contains the most commom imports, providers etc. Create a file <code>test-utilities.ts</code> </p>
+ 
+```js
+ export function getTestConfig(
+	component,
+	isDeclarable = true,
+	isProvidable = false
+) {
+	setGoogleGeoCodeMock()
+
+	const testConfig = {
+		imports: [
+			CommonModule,
+			TranslateModule,
+			MatDialogModule,
+			MatAutocompleteModule,
+			MatTableModule,
+			MatIconModule,
+			RouterTestingModule,
+		] as Array<any>,
+		providers: [
+			ConfigService,
+			{ provide: MatDialogRef, useClass: MatDialogRefMock },
+			{ provide: TranslateService, useClass: TranslateServiceMock },
+			{ provide: LanguageService, useClass: LanguageServiceMock },
+			{ provide: MatDialog, useClass: MatDialogMock },
+			{ provide: ActivatedRoute, useClass: ActivatedRouteMock },
+		] as Array<any>,
+		schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
+		declarations: [
+			NormalNumberPipe,
+		] as Array<Type<any> | any[]>,
+		entryComponents: [],
+	}
+
+	if (isDeclarable) {
+		testConfig.declarations.push(component)
+	}
+
+	if (isProvidable) {
+		testConfig.providers.push(component)
+	}
+
+	const newConfig = Object.assign(testConfig, {})
+
+	return newConfig
+}
+```
+
+<p> Then inside you component, you can call </p>
+
+```js
+import { getTestConfig } from '/test-utilities'
+
+const testConfig = getTestConfig(YourComponent)
+
+// if you want to push an additional service that are not defined in testConfig.
+TestConfig.providers.push([
+			provideMock(NewService, NewServiceMock),
+		])
+// if you want to push an additional pipe that are not defined in testConfig.
+testConfig.declarations.push([NewPipe])
+
+// use testConfig
+TestBed.configureTestingModule(testConfig).compileComponents()
+```
+  
 <a name="component"/> 
 <h4> Testing a component</h4>
 <p>As the component has dependencies, we use the TestBed to both create the component and its dependencies. </p>
