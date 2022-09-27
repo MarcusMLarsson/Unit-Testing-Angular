@@ -737,6 +737,8 @@ it('should be', () => {
   expect(result).toEqual([1, 2]);
 });
 ```
+	
+<p> because of this, one solution to testing asynchronous code is to use a spy and then return an observable using the of(). The spy will now return a synchronous observable and can hence be tested as usuall. </p>
 
 <p> Here is one more exampe with observable and promises </p>
 
@@ -765,4 +767,19 @@ describe('ValueService', () => {
     });
   });
 });
+```
+<p> When your component is using a service that uses asynchronous code, the easiest solution is to mock that service. When you are mocking it, you are turning all its methods to be syncronous. However, when your component is using for example setTimeout() we need another solution. In these scenarions we can use fakeAsync(). </p>
+	
+```js
+  it('should', fakeAsync(() => {
+	fixture.detectChanges()
+	
+	// 1 second pass before test is executed
+	tick(1000)
+	
+	fixture.detectChanges()
+	
+	expect(...).toEqual(..)
+  }));	
+	
 ```
