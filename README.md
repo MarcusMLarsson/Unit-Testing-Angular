@@ -339,7 +339,6 @@ it('should use SomeService', () => {
 	isDeclarable = true,
 	isProvidable = false
 ) {
-	setGoogleGeoCodeMock()
 
 	const testConfig = {
 		imports: [
