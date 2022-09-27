@@ -14,7 +14,6 @@
 - [Shallow Integration Tests](#shallow)  
   * [The TestBed](#testbed)  
   * [Testing a component](#component) 
-  * [Using NO_ERROR_SCHEMA](#schema) 
   * [Testing rendered HTML](#html) 
   * [Native- vs Debug-element](#element)
 - [asynchronous tests](#asynchronous)
@@ -332,9 +331,9 @@ it('should use SomeService', () => {
 	}))
 
   ```
- <a name="component"/>
+<a name="component"/> 
 <h4> Testing a component</h4>
-<p> Let's write a test for this component </p>
+<p>As the component has dependencies, we use the TestBed to both create the component and its dependencies. </p>
 
 ```js
 import { Component, OnInit } from '@angular/core'
@@ -418,15 +417,72 @@ describe('DataComponent', () => {
 		expect(component.serviceData.name).toBe(expResp.name)
 	})
 })
- ```
-  
-  
-  
-  
+ ```  
  <a name="html"/>
 <h4> Test Rendered HTML</h4>
-<p> let's write a test that tests that our template is correct.</p>
+<p> A component, unlike all other parts of an Angular application, combines an HTML template and a TypeScript class. The component truly is the template and the class working together. Many components have complex interactions with the DOM elements described in their templates, causing HTML to appear and disappear as the component state changes. To adequately test these components, you have to create the DOM elements associated with the components, you must examine the DOM to confirm that component state displays properly at the appropriate times, and you must simulate user interaction with the screen to determine whether those interactions cause the component to behave as expected.</p>
 
+```js
+describe('BannerComponent (with beforeEach)', () => {
+  let component: BannerComponent;
+  let fixture: ComponentFixture<BannerComponent>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({declarations: [BannerComponent]});
+    fixture = TestBed.createComponent(BannerComponent); // a wrapper for the component that is used in testing
+    component = fixture.componentInstance;
+  });
+
+  it('should create', () => {
+    expect(component).toBeDefined();
+  });
+  
+  it('should contain "banner works!"', () => {
+  const bannerElement: HTMLElement = fixture.nativeElement;
+  expect(bannerElement.textContent).toContain('banner works!');
+});
+});
+ ```
+ 
+ <p> The createComponent() actually returns a component fixture, which is basically a wrapper for the component that is used in testing. Another way of saying this is  that the ComponentFixture is a test harness for interacting with the created component and its corresponding element. Think of a Test Harness as an 'enabler' that actually does all the work of executing tests using a test library and generating reports. The harness has a few other properties more then what the component by itself has. One of them is the component instance itself. </p>
+ 
+ <a name="element"/>
+ <h4>Native- vs Debug-element </h4>
+ 
+<p>To get the component's element use fixture.nativeElement and look for the expected text. The value of ComponentFixture.nativeElement has the any type. Angular can't know at compile time what kind of HTML element the nativeElement is or if it even is an HTML element.  Knowing that it is an HTMLElement of some sort, use the standard HTML querySelector to dive deeper into the element tree. </p>
+
+```js
+it('should have <p> with "banner works!"', () => {
+  const bannerElement: HTMLElement = fixture.nativeElement;
+  const p = bannerElement.querySelector('p')!;
+  expect(p.textContent).toEqual('banner works!');
+});
+```
+
+<p>The properties of the nativeElement depend upon the runtime environment. You could be running these tests on a non-browser platform that doesn't have a DOM or whose DOM-emulation doesn't support the full HTMLElement API. Angular relies on the DebugElement abstraction to work safely across all supported platforms. Instead of creating an HTML element tree, Angular creates a DebugElement tree that wraps the native elements for the runtime platform. The nativeElement property unwraps the DebugElement and returns the platform-specific element object.</p>
+
+```js
+const bannerDe = fixture.debugElement;
+const bannerEl = bannerDe.nativeElement;
+});
+```
+
+<p> Although the tests in this guide all run in the browser, some applications might run on a different platform at least some of the time. For example, the component might render first on the server as part of a strategy to make the application launch faster on poorly connected devices. The server-side renderer might not support the full HTML element API. If it doesn't support querySelector, the previous test could fail. The DebugElement offers query methods that work for all supported platforms. </p>
+
+```js
+it('should find the <p> with fixture.debugElement.query(By.css)', () => {
+  const bannerDe: DebugElement = fixture.debugElement;
+  const paragraphDe = bannerDe.query(By.css('p'));
+  const p: HTMLElement = paragraphDe.nativeElement;
+  expect(p.textContent).toEqual('banner works!');
+});
+```
+
+<ul>
+<li> The By.css() static method selects DebugElement nodes with a standard CSS selector. </li>
+<li> The query returns a DebugElement for the paragraph. </li>
+<li> You must unwrap that result to get the paragraph element. </li>
+</ul>
 
 <a name="asynchronous"/>
 <h2> Asynchronous tests</h2>
@@ -454,6 +510,7 @@ it('should be green for async operation', (done) => {
 ```
 
 <p> Do we always need to use done() in callback? When callbacks are synchronous, we don’t really need to use expect() inside callback.  For example</p>
+
 ```js
 it('should be', () => {
   // given
@@ -465,5 +522,34 @@ it('should be', () => {
 
   // then
   expect(result).toEqual([1, 2]);
+});
+```
+
+<p> Here is one more exampe with observable and promises </p>
+
+```js
+describe('ValueService', () => {
+  let service: ValueService;
+  beforeEach(() => { service = new ValueService(); });
+
+  it('#getValue should return real value', () => {
+    expect(service.getValue()).toBe('real value');
+  });
+
+  it('#getObservableValue should return value from observable',
+    (done: DoneFn) => {
+    service.getObservableValue().subscribe(value => {
+      expect(value).toBe('observable value');
+      done();
+    });
+  });
+
+  it('#getPromiseValue should return value from a promise',
+    (done: DoneFn) => {
+    service.getPromiseValue().then(value => {
+      expect(value).toBe('promise value');
+      done();
+    });
+  });
 });
 ```
