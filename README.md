@@ -677,6 +677,11 @@ TestBed.configureTestingModule({
 <h4> dispatchEvent() </h4>
 <p> To simulate user input, find the input element and set its value property. Then you need to call fixture.detectChanges() to trigger Angular's change detection. But there is an essential, intermediate step. Angular doesn't know that you set the input element's value property. It won't read that property until you raise the element's input event by calling dispatchEvent(). Then you call detectChanges(). The following example demonstrates the proper sequence.</p>
 
+<a name=" @input()">
+<h4> Testing @input() and @output </h4>
+<p> </p>
+
+
 ```js
 it('should convert hero name to Title Case', () => {
   // get the name's input and display elements from the DOM
