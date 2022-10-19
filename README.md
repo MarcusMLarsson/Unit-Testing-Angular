@@ -38,14 +38,14 @@
 <ul> 
 <li> Unit testing: is done against a single "unit" of code. The word unit can mean different things to different people. Generally it can be accepted as the class. </li>
 <li> End-to-end testing: done against the full live application. This is generally done by automating the browser, to do things like clicking buttons, type into a form, navigate around etc. The benefit is that you can validate that your application works as a whole. </li>
-<li> Integration & functional testing: Defined as more than an unit but less then the whole application.</li>
+<li> Integration & functional testing: Defined as more than a unit but less then the whole application.</li>
 </ul>
 
 <p> Components in Angular have templates. Hence, Angular has tooling that allows for a special kind of test, which Angular calls an integration test. It uses the template and the component together to make sure that those two pieces are working together. I leave it up to you to to decide if this is truley an integration test or just another kind of unit test that has two different pieces; but the offical name used by the Angular team is an integration test.</p>
 
 <a name="mocking"/>
 <h4> Mocking </h4>
-<p> A very important concept in unit testing is mocking. Mocking allows us to make sure that we are only testing a single unit of code at a time. In most cases, a class does not exist in isolation. Most classes and components have dependencies. For instance, an user component might use something like an user service, which is injected into the component. When we write our unit tests, we don't want to use the real user service. It's easier to write a seperate unit test for the user service. Also, the user service might do HTTP calls, which we don't want to necessary call in the unit test. We do using a Mock (instead of using the real user service). A Mock is an instance of the original class, but a Mock has other data injected into it so you can solely focus on testing . There are several different types of mocks: </p>
+<p> A very important concept in unit testing is mocking. Mocking allows us to make sure that we are only testing a single unit of code at a time. In most cases, a class does not exist in isolation. Most classes and components have dependencies. For instance, a user component might use something like a user service, which is injected into the component. When we write our unit tests, we don't want to use the real user service. It's easier to write a seperate unit test for the user service. Also, the user service might do HTTP calls, which we don't want to necessary call in the unit test. Rather then to use the real user service, we use a Mock. A Mock is an instance of the dependency, but a Mock uses mock data so you can solely focus on testing. There are several different types of mocks: </p>
   
 <ul>
 <li> Dummies: an object that fills a place. A dummy is used instead of a real object. For example, if a method requires a paramater that is an object but it does not care what it is. Then a dummy is the perfect mock. </li>
@@ -59,7 +59,7 @@
 <p> Angular has several different types of unit tests:</p>
 <ul>
 <li> Isolated: What we think of when we think of a unit test. We simply exercise a simple unit of code, for instance a class of a component or the class of a service. We construct that class by hand and give it the constructor parameters</li>
-<li> Integration test: In an Angular integration test, we create a module, in which we put just the code that we are going to test. This is used so we can test the component with its template. There are two types of integration tests supported in Angular, shallow (only test a single component) and deep (for example both parent and child component).</li>
+<li> Deep integraiton test: For a deep integration test, we create a module, in which we put just the code that we are going to test. This is used so we can test the component with its template. There are two types of integration tests supported in Angular, shallow (only test a single component) and deep (for example both parent and child component).</li>
 </ul>
  
 <a name="tools"/> 
@@ -71,7 +71,7 @@
 <li> Jasmin: the tool that are used to create mocks. </li>
 </ul>
                                                 
-<p> There are other unit tests that are available. There is a very popular testing library called Jest, created by facebook, that is popular with other frameworks but can be used in Angular. There are Mocha and Chai which are replacements for Jasmin. There is Sinon which is a specialised mocking library. There is TestDouble which is a competitor to Sinon. There is a payed tool called Wallaby that allows you to see your code coverage of your test in the IDE. Cypress is tradtionally considered to be an end-to-end testing tool. </p>
+<p> There are other unit tests that are available. There is a very popular testing library called Jest, created by facebook, that is popular with other frameworks but can be used in Angular. With Jest you don't need to test in the browser but can test directly in vs code. Furthermore, there are Mocha and Chai which are replacements for Jasmin. There is Sinon and YestDouble which are specialised mocking libaries. There is a payed tool called Wallaby that allows you to see your code coverage of your test in the IDE. For end-to-end there is Cypress (at least tradtionally considered to be an end-to-end testing tool). </p>
 
 <a name="first"/> 
 <h4> Writing our first test </h4>
@@ -110,7 +110,7 @@
      
 <a name="good"/> 
 <h4> Writing good unit tests </h4> 
-<p> There are a few principals of writing good units tests that are generally agreed upon by the programming commmunity at large. First, it's important to know how to structure a test. Structuring tests follows what called the AAA pattern. In a good test, we actually see the code doing this things in this order. First we setup what we need to setup. Then we make a change and then we check that the change happend in the way that we expected.</p>
+<p> There are a few principals of writing good units tests that are generally agreed upon by the programming commmunity at large. First, it's important to know how to structure a test. Structuring tests follows what called the AAA pattern. In a good test, we actually see the code doing these things in this order. First we setup what we need to setup. Then we make a change and then we check that the change happend in the way that we expected.</p>
                                                                                                                                          
 <ul> 
 <li> First we <b>Arrange</b> all the necessary preconditions and inputs. </li>
@@ -120,7 +120,7 @@
 <p> There is also a concept in testing of DAMP vs DRY. </p>
 <ul>
 <li> <b>DRY</b>: Dont repreat yourself, only if necessary. </li>
-<li> <b>DAMP</b>: Repeat yourself if necessary. A good test should tell a story. The story is we start at a given place, we make a change and we check that we arrived were we got. That complete story should me inside the it() function. We should not need to look around a whole lot in order to understand what is going on in the test. A tips is to move less interesting setup into the beforeEach(). If it's some setup that needs to be there but which is not critical for the test that we are creating we can move it here. Critical setup should however be inside the it() function.</li>
+<li> <b>DAMP</b>: Repeat yourself if necessary. A good test should tell a story. The story is we start at a given place, we make a change and we check that we arrived were we got. That complete story should be inside the it() function. We should not need to look around a whole lot in order to understand what is going on in the test. A tips is to move less interesting setup into the beforeEach(). If it's some setup that needs to be there but which is not critical for the test that we are creating we can move it here. Critical setup should however be inside the it() function.</li>
 </ul>
 
 <a name="isolated"/>
@@ -381,22 +381,30 @@ it('should use SomeService', () => {
 }
 ```
 
-<p> Then inside you component, you can call </p>
+<p> Then inside your component, you can call </p>
 
 ```js
 import { getTestConfig } from '/test-utilities'
 
 const testConfig = getTestConfig(YourComponent)
 
+// use testConfig
+TestBed.configureTestingModule(testConfig).compileComponents()
+
+// to push additional services/pipes etc
+TestBed.configureTestingModule({
+			...config,
+			imports: [...config.imports, BannerModule],
+			declarations: [...config.declarations, BannerParentComponent],
+}).compileComponents()
+
+Or 
+
 // if you want to push an additional service that are not defined in testConfig.
 TestConfig.providers.push([
 			provideMock(NewService, NewServiceMock),
 		])
-// if you want to push an additional pipe that are not defined in testConfig.
-testConfig.declarations.push([NewPipe])
 
-// use testConfig
-TestBed.configureTestingModule(testConfig).compileComponents()
 ```
   
 <a name="component"/> 
@@ -788,3 +796,31 @@ describe('ValueService', () => {
   }));	
 	
 ```
+
+
+<a name="deep"/>
+<h2> Deep integration test</h2>
+<p> In a deep test, we are testing more than one component. For instance we are testing a parent component and how it interacts with its child components.
+
+
+```js
+TestBed.configureTestingModule({
+  declarations: [ HeroesComponent, HeroComponent ],
+});
+fixture = TestBed.createComponent(HeroesComponent)
+
+fixutre.detectChanges()
+
+it('should be tru', () => {
+	expect(true).toBe(true)
+})
+
+it('should send data from parent to child', () => {
+	const heroComponentDE = fixture.debugElement.queryAll(By.directive(HeroComponent))
+	expect(heroComponentDE.length).toEqual(3)
+})
+
+
+```
+
+<p> Eventhough this test actually does not do anything we are now creating an actual deep integration test. We got a real HeroesComoonent and a real HeroComponent and they are both getting created. If we call detectChanges() on the parent, change detection will also be run on all child components. Meaning both parent and child components will be initalized.</p>
