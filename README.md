@@ -18,6 +18,9 @@
   * [Native- vs Debug-element](#element)
   * [Fixture.detectChanges()](#detectChanges)
   * [dispatchEvent()](#dispatchEvent())
+- [Test double](#double)
+  * [Mocks](#mocks)  
+  * [Fixtures](#fixtures) 
 - [Asynchronous tests](#asynchronous)
 - [Deep Integration Tests](#deep)  
   * [Work in progress](#wip) 
@@ -709,6 +712,91 @@ it('should convert hero name to Title Case', () => {
   expect(nameDisplay.textContent).toBe('Quick Brown  Fox');
 });
 ```
+
+
+
+- [Test double](#double)
+  * [Mocks](#mocks)  
+  * [Fixtures](#fixtures)
+  
+<a name="double"/>
+<h2>Test double</h2>
+<p> Test Double is a generic term for any case where you replace a production object for testing purposes. </p>
+
+<a name="mocks"/>
+<h4> Mocks</h2> 
+
+<p> Imagen you have the following method in your class. In order to create the unit test, we need to mock this service. </p>
+```js
+private async fetchAndSetProvider() {
+		const provider = await this.providersService.findProvider(
+			this.inputFeed.provider._id
+		)
+	}
+
+```
+
+<p> The service looks like the following </p>
+
+
+```js
+@Injectable({
+	providedIn: 'root',
+})
+export class ProvidersService {
+	private providerCache = new Map<string, IAccount>()
+	constructor(private metry: Metry) {}
+
+	public findProvider(providerId: string): Promise<IAccount> {
+		if (this.providerCache.has(providerId)) {
+			return Promise.resolve(this.providerCache.get(providerId))
+		}
+
+		return this.metry
+			.resource('scrapers')
+			.get(providerId)
+			.then((provider) => {
+				this.providerCache.set(providerId, provider)
+				return provider
+			})
+	}
+}
+```
+
+
+<p> We start by injecting the Mock to take the place of the original ProviderService </p>
+
+```js
+beforeEach(waitForAsync(() => {
+		const config = getTestConfig(SubmeteringSystemDetailsDialogComponent)
+
+		config.providers.push(
+			{
+				useClass: ProvidersServiceMock,
+				provide: ProvidersService,
+			},
+		)
+
+		TestBed.configureTestingModule({
+			...config,
+			imports: [...config.imports, FormsModule],
+		}).compileComponents()
+	}))
+```
+
+<p> Then we also need to create the mock and import it. We have now mocked this service to behave syncronously in the test since the promise will be resolved directly. </p>
+
+```js
+export class ProvidersServiceMock {
+	public findProvider(providerId: string): Promise<any> {
+		return Promise.resolve({fixtureObject}
+}
+
+```
+
+<a name="fixtures"/>
+<h4> Fixtures</h2> 
+  
 
 <a name="asynchronous"/>
 <h2> Asynchronous tests</h2>
